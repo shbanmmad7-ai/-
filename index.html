@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مزرعة العلوم</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6edcf;--card:#fffaf0;--ink:#3b2a1a;--mut:#8a7458;--g:#5aa84a;--gd:#3f7f33;--soil:#8b5a2b;--soil2:#a9733c;--gold:#e8a91c;--line:#e4d3a8;--bad:#d9534f;--good:#4caf50;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d2618;--card:#2a3624;--ink:#f3ead2;--mut:#b9ab8a;--line:#47563d;--soil:#6b4423;--soil2:#82552b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1d2618;--card:#2a3624;--ink:#f3ead2;--mut:#b9ab8a;--line:#47563d;--soil:#6b4423;--soil2:#82552b;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Cairo,system-ui,sans-serif;line-height:1.7;min-height:100vh}
+#app{max-width:520px;margin:auto;padding:14px 14px 40px}
+.top{display:flex;align-items:center;gap:10px}
+.top h1{margin:0;font-size:1.25rem;font-weight:900}
+.top small{color:var(--mut)}
+.logo{font-size:2.4rem}
+.chips{display:flex;gap:8px;margin:12px 0}
+.chip{flex:1;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:4px 8px;text-align:center;font-weight:700;font-size:.9rem}
+.tabs{display:flex;gap:4px;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:4px;overflow-x:auto}
+.tabs button{flex:1;white-space:nowrap;border:0;background:none;color:var(--ink);font:700 .85rem Cairo;padding:8px 6px;border-radius:12px}
+.tabs button.on{background:var(--g);color:#fff}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}
+.card h2{margin:0 0 4px;font-size:1.1rem;color:var(--gd)}
+.tag{display:inline-block;background:var(--gold);color:#3b2a1a;border-radius:10px;padding:0 10px;font-size:.78rem;font-weight:700}
+.muted{color:var(--mut);font-size:.85rem}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:var(--soil);padding:12px;border-radius:18px;border:3px solid var(--soil2);margin-top:12px}
+.plot{aspect-ratio:1;border:2px dashed var(--soil2);background:var(--soil2);border-radius:14px;font-size:2.2rem;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Cairo;line-height:1.1}
+.plot small{font-size:.75rem;font-weight:700}
+.plot.ready{background:#6fbf5a;border:2px solid #fff;animation:p 1s infinite alternate}
+@keyframes p{to{transform:scale(1.06)}}
+.btn{border:0;background:var(--g);color:#fff;font:900 1rem Cairo;padding:10px 18px;border-radius:14px;box-shadow:0 4px 0 var(--gd);width:100%;margin-top:10px}
+.btn:disabled{opacity:.5}
+.btn.alt{background:var(--gold);color:#3b2a1a;box-shadow:0 4px 0 #b8860b}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}
+.row button{border:0;background:var(--g);color:#fff;font:700 .85rem Cairo;padding:6px 12px;border-radius:10px;white-space:nowrap}
+.row button:disabled{opacity:.45}
+.lock{text-align:center;padding:6px}
+input{width:100%;font:700 1rem Cairo;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);margin-top:8px}
+ul{padding-inline-start:20px;margin:6px 0}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+#modal.on{display:flex}
+.box{background:var(--card);border-radius:20px;padding:18px;width:100%;max-width:440px;max-height:90vh;overflow:auto}
+.box h3{margin:4px 0 10px;font-size:1.1rem}
+.opt{display:block;width:100%;text-align:right;font:700 .95rem Cairo;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:10px;margin-top:8px}
+.opt.good{background:var(--good);color:#fff;border-color:var(--good)}
+.opt.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+#toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:#3b2a1a;color:#fff;padding:8px 18px;border-radius:20px;font-weight:700;opacity:0;transition:.3s;z-index:30;pointer-events:none}
+#toast.on{opacity:1}
+.badge{display:inline-flex;flex-direction:column;align-items:center;width:30%;margin:4px 1%;font-size:.75rem;text-align:center}
+.badge span{font-size:2rem}
+.badge.off{filter:grayscale(1);opacity:.4}
+.me{background:rgba(90,168,74,.2);border-radius:10px}
+.out{margin-inline-start:auto;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 .8rem Cairo;border-radius:12px;padding:6px 10px}
+.scene{position:relative;padding-top:150px;border-radius:20px;overflow:hidden;margin-top:12px;border:3px solid var(--line);background:linear-gradient(#7ec8f0,#d4f1fc 150px,#92d46b 150px,#5fa84a)}
+.sun{position:absolute;top:14px;left:16px;width:54px;height:54px;border-radius:50%;background:#ffd93b;box-shadow:0 0 0 8px rgba(255,217,59,.35),0 0 30px #ffd93b;animation:sn 5s ease-in-out infinite alternate}
+@keyframes sn{to{transform:scale(1.12)}}
+.cld{position:absolute;top:16px;right:-50px;font-size:2.6rem;animation:dr 28s linear infinite}.c2{top:70px;font-size:1.9rem;animation-delay:-12s}
+@keyframes dr{to{transform:translateX(-640px)}}
+.farmer{position:absolute;top:56px;right:10px;left:10px;display:flex;align-items:flex-end;gap:8px;pointer-events:none}
+.fm{font-size:3rem;animation:bn .7s ease-in-out infinite alternate}
+.sp{background:#fff;color:#3b2a1a;border-radius:14px;padding:4px 12px;font-weight:700;font-size:.85rem;margin-bottom:14px}
+@keyframes bn{to{transform:translateY(-6px)}}
+.field{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:0 10px}
+.pl{background:none;border:0;padding:0;position:relative;aspect-ratio:1}
+.pl svg{width:100%;height:100%;overflow:visible}
+.pl small{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);color:#fff;border-radius:8px;padding:0 8px;font:700 .72rem Cairo;white-space:nowrap}
+.sway{transform-box:fill-box;transform-origin:50% 100%;animation:sw 2.4s ease-in-out infinite alternate}
+@keyframes sw{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+.pl.ready svg{filter:drop-shadow(0 0 6px #fff7a0);animation:bn .6s ease-in-out infinite alternate}
+.pl.pop svg{animation:pp .5s}
+@keyframes pp{40%{transform:scale(1.25)}}
+.paddock{display:flex;justify-content:space-around;margin:8px 10px 10px;padding:14px 4px 8px;background:rgba(255,255,255,.2);border:2px dashed rgba(255,255,255,.6);border-radius:14px;min-height:76px}
+.an{background:none;border:0;font-size:2.6rem;position:relative;animation:wk 7s ease-in-out infinite alternate}
+.an i{display:inline-block;font-style:normal;animation:fl 14s steps(1) infinite}
+@keyframes wk{from{transform:translateX(-26px)}to{transform:translateX(26px)}}
+@keyframes fl{0%{transform:scaleX(-1)}50%{transform:scaleX(1)}}
+.bub{position:absolute;top:-8px;right:-6px;font-size:1.3rem;animation:bn .5s infinite alternate}
+.deco{text-align:center;font-size:2rem;padding-bottom:10px}
+.inv{display:inline-block;margin:2px 6px;font-weight:700}
+.sk{font-size:2.6rem;animation:bn .8s ease-in-out infinite alternate}
+.fx{position:fixed;font:900 1.4rem Cairo;color:#fff;text-shadow:0 2px 4px #000;animation:up 1.1s forwards;z-index:40;pointer-events:none}
+@keyframes up{from{transform:translate(-50%,0)}to{transform:translate(-50%,-80px);opacity:0}}
+.cf{position:fixed;top:-30px;font-size:1.6rem;animation:fall 2s linear forwards;z-index:50;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.opt.bad{animation:shake .4s}@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+.world{position:relative;border-radius:20px;overflow:hidden;margin-top:12px;border:3px solid var(--line);background:linear-gradient(#7ec8f0,#d4f1fc 120px,#8fd16a 120px,#5fa84a);padding-bottom:6px}
+.world .bgs{display:block;width:100%;height:130px}
+.world .farmer{top:70px}
+.zone{margin:10px;padding:8px;border-radius:16px;background:rgba(255,255,255,.18);border:2px dashed rgba(255,255,255,.7)}
+.zone h4{margin:0 0 6px;color:#fff;text-shadow:0 1px 3px #0007;font-size:.9rem}
+.pl.lk{opacity:.6;background:var(--soil);border:2px dashed #fff8;border-radius:12px;color:#fff;font:700 .72rem Cairo}
+.pen{display:flex;flex-wrap:wrap;justify-content:space-around;align-items:center;min-height:80px;background:#c89b5e55;border-radius:12px;padding:6px}
+.pen.lock{flex-direction:column;background:#0005;color:#fff;font-weight:700}
+.street{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.bld{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:0 0 8px;font:900 .9rem Cairo;color:var(--ink)}
+.bld svg{width:100%;display:block}
+.shopin{border-radius:20px;border:3px solid var(--soil2);background:repeating-linear-gradient(#ecd09b 0 38px,#dcb77c 38px 40px);padding:10px;margin-top:10px}
+.shopin h2{margin:0 0 4px;color:#3b2a1a}
+.item{display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:6px 10px;margin-top:8px}
+.item svg{width:56px;height:56px;flex:none}
+.item .in{flex:1;font-weight:700;font-size:.9rem}
+.item button{border:0;background:var(--g);color:#fff;font:700 .85rem Cairo;padding:8px 12px;border-radius:10px;white-space:nowrap}
+.item button:disabled{opacity:.45}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:var(--g)}
+.med{font-size:1.7rem;margin-inline-end:6px}.med.off{filter:grayscale(1);opacity:.3}
+.st{display:flex;gap:10px;align-items:flex-start;border-inline-start:6px solid var(--c)}
+.st .ic{font-size:2rem}.st h3{margin:0;font-size:1rem}.st p{margin:2px 0 0;font-size:.9rem}
+.dl{position:absolute;inset:0;z-index:6;pointer-events:none}
+.dc{position:absolute;font-size:2.2rem;line-height:1;transform:translate(-50%,-50%);touch-action:none;user-select:none;padding:2px}
+.ed .dc{pointer-events:auto;outline:2px dashed #fff;border-radius:10px;background:#ffffff40;cursor:grab}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal"></div>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const sh=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const C={w:{n:'قمح',e:'🌾',g:10,cost:5,sell:9},c:{n:'جزر',e:'🥕',g:15,cost:8,sell:15},t:{n:'طماطم',e:'🍅',g:20,cost:12,sell:22},d:{n:'ذرة',e:'🌽',g:25,cost:18,sell:34},m:{n:'بطيخ',e:'🍉',g:35,cost:28,sell:58}};
+const A={h:{n:'دجاجة',e:'🐔',p:'🥚',g:40,v:6,cost:60},b:{n:'بقرة',e:'🐄',p:'🥛',g:60,v:16,cost:150}};
+const D={d1:{e:'🌻',n:'حديقة زهور',c:20},d2:{e:'🌳',n:'شجرة كبيرة',c:35},d3:{e:'🏡',n:'بيت المزرعة',c:80},d4:{e:'⛲',n:'نافورة',c:120}};
+const T={t1:{n:'مزارع نشيط',c:60},t2:{n:'نجم المزرعة ⭐',c:150},t3:{n:'ملك الحصاد 👑',c:300}};
+const Q={seed:[
+['أي جزء من النبات يمتص الماء والأملاح من التربة؟',['الجذر','الورقة','الزهرة','الثمرة'],0],
+['أين تحدث عملية البناء الضوئي؟',['الجذر','الورقة الخضراء','الساق','البذرة'],1],
+['ما الغاز الذي يأخذه النبات في البناء الضوئي؟',['الأكسجين','النيتروجين','ثاني أكسيد الكربون','الهيدروجين'],2],
+['ما اسم الصبغة الخضراء في الأوراق؟',['الكلوروفيل','الميلانين','الهيموجلوبين','الكاروتين'],0],
+['ماذا تتحول الزهرة إليه بعد الإخصاب؟',['جذر','ثمرة','ساق','ورقة'],1],
+['ما وظيفة الساق؟',['إنتاج الأزهار فقط','تثبيت النبات فقط','نقل الماء والغذاء وحمل الأوراق','امتصاص الأكسجين'],2],
+['ما الذي يحتاجه النبات ليصنع غذاءه؟',['ضوء الشمس والماء','الظلام فقط','الرمل فقط','الحرارة فقط'],0],
+['أي جزء مسؤول عن التكاثر في النبات الزهري؟',['الجذر','الورقة','الساق','الزهرة'],3],
+['ما وظيفة الجذور الشعرية؟',['امتصاص الماء والأملاح','صنع الغذاء','حمل الأزهار','تكوين الثمار'],0],
+['ماذا يحدث للبذرة عندما تجد الماء والدفء والهواء؟',['تتعفن','تنبت','تتجمد','تتبخر'],1],
+['ما الغاز الذي تخرجه الأوراق أثناء البناء الضوئي؟',['الأكسجين','الدخان','النيتروجين','الأمونيا'],0],
+['أي جزء ينبت منه نبات جديد؟',['البذرة','القشرة اليابسة','الساق الميتة','التربة'],0],
+['أي جزء ملون يجذب الحشرات في النبات؟',['الجذر','الزهرة','الساق','البذرة'],1],
+['ما الجهاز الذي يضم الجذر الرئيسي والجذور الجانبية؟',['الجهاز الجذري','الجهاز الهوائي','الجهاز العصبي','الجهاز الهضمي'],0],
+['أي جزء يحمل الأوراق والأزهار؟',['الساق','الجذر','البذرة','التربة'],0],
+['كيف تنتقل حبوب اللقاح من زهرة إلى أخرى؟',['بالرياح والحشرات','بالتجمد','بالأصوات','بالمغناطيس'],0],
+['ما اللون الذي يعطيه الكلوروفيل للأوراق؟',['الأخضر','الأحمر','الأزرق','الأصفر'],0],
+['ماذا تحتاج النباتات لتنمو؟',['ماء وضوء وهواء وتربة','ظلام فقط','سكر فقط','ثلج فقط'],0],
+['أي جزء ينقل الماء من الجذر إلى الأوراق؟',['الساق','الزهرة','الثمرة','البذرة'],0],
+['أي مما يلي من النباتات الزهرية؟',['الفول','الطحلب','الحجر','الفطر'],0]],
+tool:[
+['ما المصدر الأساسي للطاقة على الأرض؟',['القمر','الشمس','الرياح','البحار'],1],
+['أي تربة هي الأفضل للزراعة؟',['الصخرية','الرملية فقط','الطميية الخصبة','الجبلية'],2],
+['لماذا نضيف السماد إلى التربة؟',['ليزودها بالعناصر الغذائية','ليغير لونها','ليقلل الماء','ليقتل النبات'],0],
+['ما حالات المادة الثلاث؟',['صلب وسائل وغاز','حار وبارد ودافئ','ثقيل وخفيف ومتوسط','أبيض وأسود وأحمر'],0],
+['ماذا يحدث للماء عند تسخينه حتى يغلي؟',['يتجمد','يتبخر','يتحول إلى صخر','يختفي تمامًا'],1],
+['بماذا تبدأ السلسلة الغذائية دائمًا؟',['المفترس','الحيوان العاشب','المنتج (النبات)','المحلل'],2],
+['ماذا نسمي الحيوان الذي يأكل النباتات فقط؟',['لاحم','عاشب','قارت','مفترس'],1],
+['أي مما يلي مصدر متجدد للطاقة؟',['الفحم','البترول','الغاز الطبيعي','الرياح'],3],
+['ما اسم تحول الماء من سائل إلى غاز؟',['التبخر','التجمد','الانصهار','التكاثف'],0],
+['ماذا يحدث للماء عندما يبرد حتى يتجمد؟',['يتحول إلى جليد صلب','يتحول إلى غاز','يختفي','يصبح ملحاً'],0],
+['ما اسم تحول بخار الماء إلى قطرات ماء؟',['التكاثف','التبخر','الانصهار','الغليان'],0],
+['أي حالة من حالات المادة لها شكل وحجم ثابتان؟',['الصلبة','السائلة','الغازية','البخار'],0],
+['أي مما يلي غاز؟',['الأكسجين','الحليب','الخشب','الحديد'],0],
+['الحيوان الذي يأكل الحيوانات الأخرى فقط يسمى ...',['لاحم','عاشب','منتج','محلل'],0],
+['في السلسلة: عشب ← أرنب ← ثعلب، من هو المنتج؟',['العشب','الأرنب','الثعلب','الشمس'],0],
+['أي مما يلي مصدر غير متجدد للطاقة؟',['البترول','الشمس','الرياح','المياه المتحركة'],0],
+['ما فائدة الماء للنبات؟',['يذيب الأملاح ويساعد على النمو','يقتل النبات','يمنع الضوء','يمنع النمو'],0],
+['ما وصف جزيئات المادة الغازية؟',['متباعدة وتتحرك بحرية كبيرة','متراصة وثابتة','لا تتحرك أبداً','متجمدة'],0],
+['أي تربة تحتفظ بالماء أكثر؟',['الطينية','الرملية','الحصوية','الصخرية'],0],
+['ما اسم الكائن الذي يحلل بقايا الكائنات الميتة؟',['المحلل','المنتج','العاشب','اللاحم'],0]]};
+Q.seed.push(
+['ما الجزء الذي يثبّت النبات في التربة؟',['الجذر','الزهرة','الورقة','الثمرة'],0],
+['ما اسم الثقوب الصغيرة في الورقة التي يدخل منها الهواء؟',['الثغور','العروق','الجذور','البتلات'],0],
+['ما اسم عملية فقد الماء من الأوراق على هيئة بخار؟',['النتح','الإنبات','التلقيح','الإخصاب'],0],
+['ما الجزء الذكري في الزهرة الذي ينتج حبوب اللقاح؟',['السداة','المتاع','الكأس','الجذر'],0],
+['ما الجزء الأنثوي في الزهرة؟',['المتاع','السداة','الساق','الجذير'],0],
+['ماذا نسمي انتقال حبوب اللقاح إلى المتاع؟',['التلقيح','النتح','التبخر','الإنبات'],0],
+['ما الذي يوجد داخل الثمرة عادةً؟',['البذور','الجذور','الأوراق','الأزهار'],0],
+['أي جزء يخرج أولًا من البذرة عند الإنبات؟',['الجذير','الزهرة','الثمرة','الورقة الكبيرة'],0],
+['ما نوع الغذاء الذي يصنعه النبات في البناء الضوئي؟',['سكر (جلوكوز)','لحوم','ألبان','ملح'],0],
+['ما اسم الأوراق الخضراء الصغيرة التي تحمي برعم الزهرة؟',['الكأس','الجذر','السداة','المتاع'],0],
+['أي من هذه النباتات لا زهري؟',['السرخس','الفول','البرتقال','الورد'],0],
+['كيف تتكاثر نباتات السرخس؟',['بالأبواغ','بالثمار','بالأزهار','بالبيض'],0],
+['ما الجزء الذي نأكله من نبات الجزر؟',['الجذر','الورقة','الزهرة','الثمرة'],0],
+['ما الجزء الذي نأكله من نبات الخس؟',['الأوراق','الجذور','الثمار','البذور'],0],
+['ما الجزء الذي نأكله من نبات الطماطم؟',['الثمرة','الجذر','الورقة','الساق'],0],
+['لماذا تميل النباتات نحو الضوء؟',['لتحصل على الضوء اللازم للبناء الضوئي','لأنها تخاف','لكي تتجمد','لكي تتبخر'],0],
+['ماذا يحدث لنبات وُضع في الظلام أيامًا طويلة؟',['يصفرّ ويضعف','يزداد اخضرارًا','يصنع غذاءً أكثر','لا يتغير'],0],
+['ما الأنابيب التي تنقل الماء داخل الساق؟',['الأوعية الخشبية','البتلات','الثغور','الأبواغ'],0],
+['أي مما يلي يساعد على نشر البذور؟',['الرياح والماء والحيوانات','الظلام','الجليد فقط','الصخور'],0],
+['لماذا يخزن نبات الصبار الماء في ساقه؟',['ليعيش في البيئة الصحراوية الجافة','ليطفو على الماء','ليصنع أزهارًا فقط','ليعطي ظلًا'],0],
+['أين يعيش نبات ورد النيل؟',['على سطح الماء','تحت الأرض','في الصحراء','في الجليد'],0],
+['ماذا تفعل الجذور بالتربة؟',['تمسكها وتمنع انجرافها','تذيبها','تلونها','تبخّرها'],0],
+['ما اسم الأوراق الصغيرة الملونة في الزهرة؟',['البتلات','الجذور','الساق','البذور'],0]
+);
+Q.tool.push(
+['ما مكونات التربة؟',['فتات الصخور وبقايا الكائنات والماء والهواء','حديد فقط','بلاستيك','زجاج'],0],
+['ما اسم بقايا الكائنات المتحللة في التربة؟',['الدبال','الحصى','الملح','الصخر'],0],
+['أي تربة تسمح بمرور الماء بسرعة؟',['الرملية','الطينية','الطميية','الدبالية'],0],
+['كيف تفيد الديدان الأرضية التربة؟',['تهويها وتزيد خصوبتها','تجففها','تلوثها','تحرقها'],0],
+['أي مما يلي مثال على المنتج في السلسلة الغذائية؟',['الذرة','الأسد','الذئب','الصقر'],0],
+['في السلسلة: نبات ← جراد ← ضفدع ← ثعبان، من المستهلك الأول؟',['الجراد','النبات','الضفدع','الثعبان'],0],
+['ما الذي يعيد العناصر الغذائية إلى التربة بعد موت الكائنات؟',['المحللات كالفطريات والبكتيريا','المفترسات','الرياح','القمر'],0],
+['لماذا نسقي النباتات بانتظام؟',['لأن الماء ضروري لنموها','لتغيير لونها فقط','لتفقد جذورها','لتسقط أوراقها'],0],
+['ما أثر قلة الماء على النبات؟',['يذبل وقد يموت','ينمو أسرع','تكبر ثماره','لا يتأثر'],0],
+['ما أثر الإسراف في الري على النبات؟',['قد تتعفن جذوره','يزداد نموه دائمًا','يصنع غذاءً أكثر','تظهر أزهار أكثر'],0],
+['ما فائدة تقليب التربة قبل الزراعة؟',['تهويتها وتسهيل نمو الجذور','إزالة الماء منها','تلويثها','إيقاف النمو'],0],
+['ما نوع الطاقة التي يستخدمها النبات ليصنع غذاءه؟',['الطاقة الضوئية','الطاقة الصوتية','الطاقة المغناطيسية','طاقة الحركة'],0],
+['ما تحوّل الطاقة في البناء الضوئي؟',['من ضوئية إلى كيميائية مخزنة في الغذاء','من حرارية إلى صوتية','من كهربائية إلى ضوئية','من حركية إلى مغناطيسية'],0],
+['من أين تحصل الحيوانات العاشبة على طاقتها؟',['من النباتات','من الصخور','من الهواء فقط','من الماء فقط'],0],
+['ماذا يحدث لخصوبة التربة إذا زُرع فيها المحصول نفسه كل عام دون سماد؟',['تقل خصوبتها','تزداد دائمًا','تتحول إلى ماء','لا تتغير'],0],
+['ما فائدة الأشجار للبيئة؟',['تنتج الأكسجين وتقلل ثاني أكسيد الكربون','تنتج ثاني أكسيد الكربون فقط','تلوث الهواء','تجفف الأنهار'],0],
+['أي مما يلي مصدر للماء العذب؟',['الأنهار','مياه المحيط','مياه البحر الأحمر','مياه الملاحات'],0],
+['ما العملية التي ينتقل بها الماء من البحار إلى السحب؟',['التبخر','التجمد','الإنبات','التلقيح'],0],
+['ما اسم الماء الذي يسقط من السحب؟',['الأمطار','العصير','الدبال','الغبار'],0],
+['في أي حالة يكون بخار الماء؟',['الغازية','الصلبة','السائلة','الجليدية'],0]
+);
+Q.big=[...Q.seed,...Q.tool];
+function pick(bank,N){S.seen=S.seen||[];const un=bank.filter(q=>!S.seen.includes(q[0]));if(un.length>=N)return sh(un).slice(0,N);S.seen=S.seen.filter(k=>!bank.some(q=>q[0]==k));return [...sh(un),...sh(bank.filter(q=>!un.includes(q)))].slice(0,N)}
+const BG=[['first','🌱','أول حصاد'],['pass','📘','اجتزت امتحانًا'],['perfect','⭐','علامة كاملة'],['rich','💰','١٠٠ عملة'],['up','🚜','طوّرت أداة'],['lvl','🏆','مزارع ماهر']];
+const LV=['مزارع مبتدئ','مزارع ماهر','خبير المزرعة'];
+let S=null,LB={},tab='farm';
+let PL={};
+try{PL=JSON.parse(localStorage.getItem('farmP'))||{};const o=JSON.parse(localStorage.getItem('farm'));if(o&&o.name&&!PL[o.name])PL[o.name]=o;LB=JSON.parse(localStorage.getItem('farmlb'))||{};S=PL[localStorage.getItem('farmCur')]||null}catch(e){}
+function fix(){if(!S)return;for(const k in C){S.seeds[k]=S.seeds[k]||0;S.crops[k]=S.crops[k]||0}S.an=S.an||[];S.seen=S.seen||[];S.own=S.own||[]}fix();
+const save=()=>{if(S)LB[S.name]=S.pts;try{PL[S.name]=S;localStorage.setItem('farmP',JSON.stringify(PL));localStorage.setItem('farmCur',S.name);localStorage.setItem('farmlb',JSON.stringify(LB))}catch(e){}};
+const LVP=[0,70,300];const lvl=()=>S.pts>=LVP[2]?2:S.pts>=LVP[1]?1:0;
+const lim=()=>lvl()==2&&S.up?10:3+2*lvl();
+const day=()=>new Date().toDateString();
+const pleft=()=>2-((S.prac&&S.prac.d===day())?S.prac.n:0);
+const left=s=>lim()-((S.used&&S.ud===day()&&S.used[s])||0);
+const dur=k=>C[k].g*(1-.2*S.tools.can);
+const price=k=>Math.round(C[k].sell*(1+.2*S.tools.bask));
+function toast(t){const x=$('#toast');x.textContent=t;x.classList.add('on');setTimeout(()=>x.classList.remove('on'),1800)}
+function give(id){if(S.badges.includes(id))return;S.badges.push(id);toast('🎖️ شارة جديدة: '+BG.find(b=>b[0]==id)[2])}
+function chk(){if(S.coins>=100)give('rich');if(lvl()>=1)give('lvl')}
+function close(){$('#modal').classList.remove('on')}
+function modal(h){const m=$('#modal');m.innerHTML='<div class=box>'+h+'</div>';m.classList.add('on')}
+
+function exam(shop){
+ const N=shop=='big'?10:5,qs=pick(Q[shop],N);let i=0,ok=0;const was=S.pass[shop]>Date.now();if(shop=='big'&&S.chd===day())return toast('امتحان التحدي مرة واحدة في اليوم 🌙');
+ if(was&&pleft()<=0)return toast('خلصت تدريبات النهاردة، ارجع بكرة 🌙');
+ qs.forEach(q=>S.seen.push(q[0]));function show(){
+  const [q,o,a]=qs[i];const opts=sh(o.map((t,j)=>({t,j})));
+  modal(`<span class=tag>امتحان ${shop=='seed'?'متجر البذور':'متجر الأدوات'}</span><div class=muted>سؤال ${i+1} من ${N}</div><h3>${q}</h3>`+opts.map(x=>`<button class=opt data-j="${x.j}">${x.t}</button>`).join(''));
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+   const r=+b.dataset.j===a;
+   if(r){ok++;b.classList.add('good')}else{b.classList.add('bad');document.querySelector(`.opt[data-j="${a}"]`).classList.add('good')}
+   document.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+   setTimeout(()=>++i<N?show():end(),1000)})
+ }
+ function end(){
+  S.pts+=ok*10;const pass=ok>=(shop=='big'?8:4);if(was)S.prac={d:day(),n:2-pleft()+1};
+  if(shop=='big'){S.chd=day();if(pass)S.up=1}else if(pass&&!was){S.pass[shop]=Date.now()+6048e5;S.used=S.used||{};S.used[shop]=0;give('pass')}
+  if(ok==N)give('perfect');
+  chk();save();
+  modal(`<h3>${shop=='big'?(pass?'🏆 مبروك! بقيت أسطورة المزرعة':'😕 محتاج 8 من 10، جرّب بكرة'):was?'📚 تدريب ممتاز!':pass?'🎉 أحسنت! المتجر مفتوح':'😕 حاول مرة أخرى'}</h3><p>أجبت صح على ${ok} من ${N} (+${ok*10} نقطة)</p><p class=muted>${shop=='big'?(pass?'حد الشراء اليومي بقى 10 عمليات 🎉':'راجع الشرح وحاول بكرة.'):pass?(was?'النقاط دي بتساعدك ترتقي لمستوى أعلى وتزوّد حد الشراء.':'المتجر مفتوح ليك أسبوع، ومسموح لك '+lim()+' عمليات شراء. ارتقِ لمستوى أعلى عشان تزوّد الحد.'):'محتاج 4 إجابات صحيحة على الأقل. راجع الشرح وجرّب تاني.'}</p><button class=btn id=ok>تمام</button>`);
+  $('#ok').onclick=()=>{close();render()}
+ }
+ show()
+}
+function plant(i){
+ const own=Object.keys(C).filter(k=>S.seeds[k]>0);
+ if(!own.length){modal('<h3>مفيش بذور 🌰</h3><p>روح متجر البذور، اجتز الامتحان واشتري بذور.</p><button class=btn id=ok>تمام</button>');$('#ok').onclick=close;return}
+ modal('<h3>اختر البذرة</h3>'+own.map(k=>`<button class=opt data-k=${k}>${C[k].e} ${C[k].n} (×${S.seeds[k]}) — ينمو في ${Math.round(dur(k))} ث</button>`).join('')+'<button class="btn alt" id=x>إلغاء</button>');
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const k=b.dataset.k;S.seeds[k]--;S.plots[i]={k,t:Date.now()};save();close();render()});
+ $('#x').onclick=close
+}
+function tap(i){
+ const p=S.plots[i];if(!p)return plant(i);
+ const left=dur(p.k)-(Date.now()-p.t)/1000;
+ if(left>0)return toast('لسه بينمو... '+Math.ceil(left)+' ث');
+ S.crops[p.k]++;S.plots[i]=null;give('first');save();toast('تم الحصاد '+C[p.k].e);render()
+}
+function buy(shop,fn){
+ if(!(S.pass[shop]>Date.now())||left(shop)<=0)return;
+ if(fn()===false)return;
+ S.used=S.used||{};if(S.ud!==day()){S.ud=day();S.used={}}S.used[shop]=(S.used[shop]||0)+1;chk();save();render()
+}
+const tools={can:{n:'🚿 مرشة ماء أسرع',d:'تقلل وقت النمو 20%',c:l=>40*(l+1)},bask:{n:'🧺 سلة أكبر',d:'تزيد سعر البيع 20%',c:l=>50*(l+1)}};
+
+function extra(){
+ const an=S.an.map((a,i)=>{const k=A[a.k],l=Math.ceil(k.g-(Date.now()-a.t)/1000);return l>0?`<button class=plot data-an=${i}>${k.e}<small>${l} ث</small></button>`:`<button class="plot ready" data-an=${i}>${k.p}<small>اجمع</small></button>`}).join('');
+ const dc=S.own.filter(x=>D[x]).map(x=>D[x].e).join(' ');
+ return (an?`<div class=grid style="background:#5b8a3c">${an}</div>`:'')+(dc?`<div class=card style="text-align:center;font-size:2rem">${dc}</div>`:'')}
+function chalCard(){
+ return `<div class=card><span class=tag>🏆 تحدي</span><h2>امتحان التحدي (10 أسئلة)</h2>`+(S.up?'<p class=muted>أنت أسطورة المزرعة! حد الشراء اليومي 10 🎉</p>':lvl()==2?'<p class=muted>جاوب 8 من 10 صح وارتقِ فوق الخبير: حد الشراء يوميًا يبقى 10.</p><button class="btn alt" data-ex=big>ابدأ التحدي</button>':'<p class=muted>🔒 يفتح لما توصل لمستوى «خبير المزرعة» (100 نقطة).</p>')+'</div>'}
+function more(){
+ const n=S.plots.length,pc=40*(n-5);
+ const ar=Object.keys(A).map(k=>`<div class=row><span>${A[k].e} ${A[k].n} — تنتج ${A[k].p} كل ${A[k].g} ث (${A[k].v} 🪙)</span><button data-ba=${k} ${S.coins>=A[k].cost&&S.an.length<6?'':'disabled'}>${A[k].cost} 🪙</button></div>`).join('');
+ const dr=Object.keys(D).map(k=>`<div class=row><span>${D[k].e} ${D[k].n}</span>${S.own.includes(k)?'<b>✔</b>':`<button data-bd=${k} ${S.coins>=D[k].c?'':'disabled'}>${D[k].c} 🪙</button>`}</div>`).join('');
+ const tr=Object.keys(T).map(k=>`<div class=row><span>🏅 ${T[k].n}</span>${S.title==k?'<b>✔ مُرتدى</b>':S.own.includes(k)?`<button data-bd=${k}>ارتدِ</button>`:`<button data-bd=${k} ${S.coins>=T[k].c?'':'disabled'}>${T[k].c} 🪙</button>`}</div>`).join('');
+ return `${chalCard()}<div class=card><span class=tag>بدون امتحان</span><h2>🏗️ توسعة الأرض</h2><div class=row><span>🌱 أرض جديدة (${n}/12)</span><button data-bp=1 ${n<12&&S.coins>=pc?'':'disabled'}>${n<12?pc+' 🪙':'أقصى'}</button></div></div><div class=card><h2>🐾 الحيوانات</h2>${ar}<p class=muted>لحد 6 حيوانات.</p></div><div class=card><h2>🎨 التزيين والألقاب</h2>${dr}${tr}</div>`}
+function view(){
+ if(tab=='learn')return `<div class=card><span class=tag>القصة</span><h2>مزرعة العلوم تحتاجك!</h2><p>ورثت مزرعة صغيرة، لكن المتاجر مقفولة! علشان تفتح متجر البذور أو الأدوات لازم تجتاز امتحان علوم من 5 أسئلة.</p></div>
+ <div class=card><span class=tag>القواعد</span><h2>كيف تلعب؟</h2><ul><li>اضغط على أي قطعة أرض فارغة وازرع بذرة.</li><li>استنى لحد ما تكبر ثم اضغط عليها للحصاد.</li><li>بيع المحصول من تبويب «المتاجر» واجمع العملات.</li><li>اصرف عملاتك على: بذور جديدة، توسعة الأرض، حيوانات بتنتج، وديكورات وألقاب لمزرعتك. 🐔🌻</li><li>المتجر بيتفتح <b>أسبوع كامل</b> بعد امتحان 5 أسئلة (لازم <b>4 صح</b> على الأقل)، وبعد الأسبوع بيتقفل تاني.</li><li>ليك عدد محدود من عمليات الشراء <b>كل يوم</b> من كل متجر، وبيزيد كل ما <b>ترتقي لمستوى أعلى</b> (3 ← 5 ← 7)، وبعد «خبير المزرعة» تجتاز <b>امتحان التحدي (10 أسئلة)</b> وتوصل لـ 10. اجمع النقاط من الامتحان والتدريب (التدريب مرتين في اليوم).</li><li>كل إجابة صحيحة = <b>10 نقاط</b>.</li><li>لما تجمع 50 نقطة تترقى لمستوى جديد: مبتدئ ← ماهر ← خبير.</li></ul></div>
+ <div class=card><span class=tag>نصيحة</span><h2>ذاكر الأول!</h2><p>الأسئلة عن النبات والتربة والطاقة والمادة. كل ما تذاكر أكتر، تفتح متاجر أكتر وتكبّر مزرعتك. 🌻</p></div>`;
+ if(tab=='farm')return `<div class=grid>${S.plots.map((p,i)=>{
+  if(!p)return `<button class=plot data-i=${i}>＋</button>`;
+  const l=Math.ceil(dur(p.k)-(Date.now()-p.t)/1000);
+  return l>0?`<button class=plot data-i=${i}>🌱<small>${l} ث</small></button>`:`<button class="plot ready" data-i=${i}>${C[p.k].e}<small>احصد</small></button>`}).join('')}</div>
+ ${extra()}<div class=card><h2>مخزنك</h2><div>${Object.keys(C).map(k=>`${C[k].e} بذور: ${S.seeds[k]} &nbsp; محصول: ${S.crops[k]}`).join('<br>')}</div></div>`;
+ if(tab=='shop'){
+  const lk=(s)=>S.pass[s]>Date.now()?`<div class=muted>🔓 مفتوح حتى ${new Date(S.pass[s]).toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'})} — متبقي النهارده ${left(s)} من ${lim()}</div>${left(s)>0?'':'<div class=muted>🚫 وصلت لحد الشراء النهارده. ارجع بكرة 🌙 أو زوّد الحد بالارتقاء لمستوى أعلى بجمع النقاط'+(lvl()<2?' (عند '+LVP[lvl()+1]+' نقطة)':'')+'</div>'}<button class="btn alt" data-ex=${s} ${pleft()>0?'':'disabled'}>تدريب لزيادة النقاط (متبقي ${pleft()} اليوم)</button>`:`<div class=lock><div class=sk>🧑‍🌾</div><div class=sp style="display:inline-block;margin:0">أهلاً بيك! جاوب 5 أسئلة علوم وأفتحلك المتجر أسبوع كامل 🔑</div><button class="btn alt" data-ex=${s}>ابدأ الامتحان (5 أسئلة)</button></div>`;
+  const op=s=>S.pass[s]>Date.now();
+  return `<div class=card><span class=tag>السوق</span><h2>بيع محصولك</h2>${Object.keys(C).map(k=>`<div class=row><span>${C[k].e} ${C[k].n} (×${S.crops[k]}) — ${price(k)} 🪙</span><button data-sell=${k} ${S.crops[k]?'':'disabled'}>بيع الكل</button></div>`).join('')}</div>
+  <div class=card><span class=tag>🌰 امتحان</span><h2>متجر البذور</h2>${lk('seed')}${op('seed')?Object.keys(C).map(k=>`<div class=row><span>${C[k].e} بذور ${C[k].n} — ${C[k].cost} 🪙</span><button data-bs=${k} ${S.coins>=C[k].cost&&left('seed')>0?'':'disabled'}>شراء</button></div>`).join(''):''}</div>
+  <div class=card><span class=tag>🛠️ امتحان</span><h2>متجر الأدوات</h2>${lk('tool')}${op('tool')?Object.keys(tools).map(k=>{const l=S.tools[k],c=tools[k].c(l);return `<div class=row><span>${tools[k].n} (مستوى ${l}/3)<br><small class=muted>${tools[k].d}</small></span><button data-bt=${k} ${l<3&&S.coins>=c&&left('tool')>0?'':'disabled'}>${l<3?c+' 🪙':'أقصى'}</button></div>`}).join(''):''}</div>${more()}`}
+ if(tab=='badges')return `<div class=card><h2>إنجازاتي</h2>${BG.map(b=>`<div class="badge ${S.badges.includes(b[0])?'':'off'}"><span>${b[1]}</span>${b[2]}</div>`).join('')}</div>`;
+ const rows=Object.entries(LB).sort((a,b)=>b[1]-a[1]).slice(0,10);
+ return `<div class=card><span class=tag>المتصدرون</span><h2>لوحة الصدارة</h2>${rows.map((r,i)=>`<div class="row ${r[0]==S.name?'me':''}"><span>${['🥇','🥈','🥉'][i]||i+1+'.'} ${r[0]}</span><b>${r[1]} ⭐</b></div>`).join('')}<p class=muted>اللوحة تعرض اللاعبين على هذا الجهاز.</p></div>`
+}
+function render(){
+ const a=$('#app');
+ if(!S){a.innerHTML=`<div class=top><span class=logo>🧑‍🌾</span><div><h1>مزرعة العلوم</h1><small>الصف الخامس الابتدائي</small></div></div>
+ <div class=card><span class=tag>القصة</span><h2>مزرعتك في انتظارك!</h2><p>ازرع، احصد، بيع، وطوّر مزرعتك. لكن المتاجر مقفولة، ومفتاحها هو معلوماتك في العلوم! 🌾</p>${Object.keys(PL).length?'<h2 style="font-size:1rem">اللاعبين على الجهاز:</h2>'+Object.keys(PL).map((n,i)=>`<button class="btn alt" data-pl=${i}>${n} — ⭐${PL[n].pts}</button>`).join('')+'<p class=muted>أو سجّل لاعب جديد:</p>':''}<input id=nm placeholder="اكتب اسمك" maxlength=20><button class=btn id=go>ابدأ المزرعة</button></div>`;
+  document.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>{S=PL[Object.keys(PL)[+b.dataset.pl]];fix();tab='farm';save();render()});
+  $('#go').onclick=()=>{const n=$('#nm').value.replace(/[<>&"]/g,'').trim();if(!n)return toast('اكتب اسمك الأول');if(PL[n])return toast('الاسم ده موجود، اختاره من القائمة');S={name:n,coins:30,pts:0,seeds:{w:2,c:0,t:0},crops:{w:0,c:0,t:0},plots:Array(6).fill(null),pass:{seed:0,tool:0},tools:{can:0,bask:0},badges:[]};fix();tab='learn';save();render()};return}
+ a.innerHTML=`<div class=top><span class=logo>🧑‍🌾</span><div><h1>أهلًا يا ${S.name}</h1><small>${lvl()==2&&S.up?'أسطورة المزرعة':LV[lvl()]}${S.title?' — '+T[S.title].n:''}</small></div><button class=out data-out=1>🚪 خروج</button></div>
+ <div class=chips><div class=chip>🪙 ${S.coins}</div><div class=chip>⭐ ${S.pts}</div><div class=chip>🎖️ ${S.badges.length}/6</div></div>
+ <div class=tabs>${[['learn','الشرح'],['farm','المزرعة'],['shop','المتاجر'],['badges','إنجازاتي'],['top','المتصدرون']].map(t=>`<button data-t=${t[0]} class="${tab==t[0]?'on':''}">${t[1]}</button>`).join('')}</div><div id=main>${view()}</div>`;
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b||!S)return;const d=b.dataset;
+ if(d.out){save();try{localStorage.removeItem('farmCur')}catch(e){}S=null;tab='farm';render()}
+ else if(d.t){tab=d.t;render()}
+ else if(d.i!==undefined)tap(+d.i);
+ else if(d.ex)exam(d.ex);
+ else if(d.sell){const k=d.sell;S.coins+=S.crops[k]*price(k);S.crops[k]=0;chk();save();render()}
+ else if(d.bp){const c=40*(S.plots.length-5);if(S.plots.length>=12||S.coins<c)return;S.coins-=c;S.plots.push(null);save();render()}
+ else if(d.ba){const k=A[d.ba];if(S.coins<k.cost||S.an.length>=6)return;S.coins-=k.cost;S.an.push({k:d.ba,t:Date.now()});save();render()}
+ else if(d.an!==undefined){const a=S.an[+d.an],k=A[a.k];if((Date.now()-a.t)/1000<k.g)return toast('لسه مش جاهز...');S.coins+=k.v;a.t=Date.now();chk();save();toast('+'+k.v+' 🪙 من '+k.p);render()}
+ else if(d.bd){const k=d.bd,it=D[k]||T[k];if(!S.own.includes(k)){if(S.coins<it.c)return;S.coins-=it.c;S.own.push(k)}if(T[k])S.title=k;chk();save();render()}
+ else if(d.bs)buy('seed',()=>{const k=d.bs;if(S.coins<C[k].cost)return false;S.coins-=C[k].cost;S.seeds[k]++});
+ else if(d.bt)buy('tool',()=>{const k=d.bt,c=tools[k].c(S.tools[k]);if(S.coins<c||S.tools[k]>=3)return false;S.coins-=c;S.tools[k]++;give('up')});
+});
+const SOIL='<ellipse cx=50 cy=86 rx=42 ry=12 fill="#6b4423"/><ellipse cx=50 cy=82 rx=35 ry=8 fill="#8b5a2b"/>';
+const FR={t:(y,f)=>`<circle cx=40 cy=${y+10} r=9 fill="${f}"/><circle cx=60 cy=${y+12} r=9 fill="${f}"/><circle cx=50 cy=${y+2} r=10 fill="${f}"/>`,w:(y,f)=>`<ellipse cx=42 cy=${y+4} rx=5 ry=14 fill="${f}"/><ellipse cx=58 cy=${y+6} rx=5 ry=14 fill="${f}"/><ellipse cx=50 cy=${y-4} rx=5 ry=15 fill="${f}"/>`,c:(y,f)=>`<ellipse cx=50 cy=80 rx=11 ry=7 fill="${f}"/><ellipse cx=50 cy=${y+4} rx=7 ry=6 fill="#5cb23f"/>`,d:(y,f)=>`<ellipse cx=50 cy=${y+8} rx=10 ry=18 fill="${f}"/><ellipse cx=40 cy=${y+12} rx=5 ry=15 fill="#4c9e38"/><ellipse cx=60 cy=${y+12} rx=5 ry=15 fill="#4c9e38"/>`,m:(y,f)=>`<ellipse cx=50 cy=74 rx=28 ry=18 fill="${f}"/><path d="M32 62Q50 76 36 88M50 56Q60 74 50 92M68 62Q50 76 64 88" stroke="#1d5f2e" stroke-width=3 fill=none />`};
+function pSVG(k,st){
+ if(!st)return `<svg viewBox="0 0 100 100">${SOIL}<text x=50 y=87 text-anchor=middle font-size=24 fill="#fff8e7" opacity=.85>+</text></svg>`;
+ const f={w:'#e8b923',c:'#e8782a',t:'#e03c31',d:'#f2c230',m:'#2f8f46'}[k],h=[0,16,30,44,48][st],y=82-h;
+ let g=`<path d="M50 82V${y}" stroke="#3f8f2f" stroke-width=5 stroke-linecap=round />`;
+ if(st==1)g+=`<ellipse cx=50 cy=${y} rx=8 ry=5 fill="#7ccc4f"/>`;
+ if(st>=2)g+=`<ellipse cx=37 cy=${y+h*.4} rx=12 ry=5 fill="#5cb23f" transform="rotate(-28 37 ${y+h*.4})"/><ellipse cx=63 cy=${y+h*.4} rx=12 ry=5 fill="#5cb23f" transform="rotate(28 63 ${y+h*.4})"/>`;
+ if(st==3)g+=`<circle cx=50 cy=${y} r=5 fill="${f}" opacity=.6 />`;
+ if(st==4)g+=FR[k](y,f);
+ return `<svg viewBox="0 0 100 100">${SOIL}<g class=sway>${g}</g></svg>`}
+const stg=p=>{const r=(Date.now()-p.t)/(dur(p.k)*1000);return r>=1?4:r>.66?3:r>.33?2:1};
+const rem=p=>Math.ceil(dur(p.k)-(Date.now()-p.t)/1000)+' ث';
+const plotIn=(p,st)=>pSVG(p?p.k:0,p?st:0)+(p?`<small>${st==4?'احصد!':rem(p)}</small>`:'');
+const aRd=a=>(Date.now()-a.t)/1000>=A[a.k].g;
+const anIn=(a,r)=>(r?`<b class=bub>${A[a.k].p}</b>`:'')+`<i>${A[a.k].e}</i>`;
+function plotH(p,i){const st=p?stg(p):0;return `<button class="pl${st==4?' ready':''}" data-i=${i} data-s=${st}>${plotIn(p,st)}</button>`}
+function farmView(){
+ const rd=S.plots.some(p=>p&&stg(p)==4),msg=rd?'المحصول جاهز! اضغط عليه 🎉':(!Object.values(S.seeds).some(n=>n>0)&&!S.plots.some(Boolean))?'روح المتاجر واشتري بذور 🌰':'اضغط على أرض فاضية وازرع!';
+ return `<div class=scene><div class=sun></div><div class="cld c1">☁️</div><div class="cld c2">☁️</div><div class=farmer><div class=fm>🧑‍🌾</div><span class=sp>${msg}</span></div><div class=field>${S.plots.map(plotH).join('')}</div>${S.an.length?`<div class=paddock>${S.an.map((a,i)=>`<button class="an${aRd(a)?' rd':''}" data-an=${i}>${anIn(a,aRd(a))}</button>`).join('')}</div>`:''}${S.own.some(x=>D[x])?`<div class=deco>${S.own.filter(x=>D[x]).map(x=>D[x].e).join(' ')}</div>`:''}</div><div class=card><h2>مخزنك</h2>${Object.keys(C).map(k=>`<span class=inv>${C[k].e} 🌰${S.seeds[k]} · 🧺${S.crops[k]}</span>`).join('')}</div>`}
+function fx(el,t){const r=el.getBoundingClientRect(),x=document.createElement('div');x.className='fx';x.textContent=t;x.style.left=r.left+r.width/2+'px';x.style.top=r.top+'px';document.body.appendChild(x);setTimeout(()=>x.remove(),1100)}
+function conf(){for(let i=0;i<26;i++){const x=document.createElement('div');x.className='cf';x.textContent=['🎉','⭐','🌟','🪙','🌻'][i%5];x.style.left=Math.random()*100+'vw';x.style.animationDelay=Math.random()*.6+'s';document.body.appendChild(x);setTimeout(()=>x.remove(),2700)}}
+const _v=view,_tap=tap,_m=modal;
+view=()=>tab=='farm'?farmView():_v();
+tap=i=>{const p=S.plots[i];if(p&&stg(p)==4)fx(document.querySelector('.pl[data-i="'+i+'"]'),'+1 '+C[p.k].e);_tap(i)};
+modal=h=>{_m(h);if(h.includes('المتجر مفتوح')||h.includes('أسطورة'))conf()};
+document.addEventListener('click',e=>{const b=e.target.closest('button.an.rd');if(b)fx(b,'+🪙')},true);
+setInterval(()=>{if(!S||tab!='farm')return;
+ document.querySelectorAll('.pl').forEach(b=>{const p=S.plots[+b.dataset.i];if(!p)return;const st=stg(p);if(+b.dataset.s!=st){b.dataset.s=st;b.innerHTML=plotIn(p,st);b.classList.toggle('ready',st==4);b.classList.add('pop');setTimeout(()=>b.classList.remove('pop'),600)}else if(st<4)b.querySelector('small').textContent=rem(p)});
+ document.querySelectorAll('.an').forEach(b=>{const a=S.an[+b.dataset.an],r=aRd(a);if(b.classList.contains('rd')!=r){b.classList.toggle('rd',r);b.innerHTML=anIn(a,r)}})},1000);
+
+/* ===== v2 upgrade ===== */
+let shopIn=null;
+const PEN={h:40,b:100},PEN_N={h:'حظيرة الدجاج',b:'حظيرة الأبقار'};
+const AC=[['earn','💰','جامع العملات','عملة من بيع المحاصيل',()=>S.st.earn,[100,1000,5000]],['sales','🧺','تاجر المحاصيل','عملية بيع',()=>S.st.sales,[100,1000,5000]],['hv','🌾','حصّاد ماهر','مرة حصاد',()=>S.st.hv,[10,50,200]],['an','🐔','مربّي الحيوانات','حيوان',()=>S.an.length,[1,3,6]],['land','🌱','مالك الأراضي','قطعة أرض',()=>S.plots.length,[8,10,12]]];
+const SHP=[['seed','متجر البذور','#5aa84a','🌰'],['tool','متجر الأدوات','#4a7fc0','🛠️'],['an','متجر الحيوانات','#d9534f','🐄'],['deco','الديكورات والألقاب','#e8a91c','🌻'],['mkt','سوق المحاصيل','#8b5a2b','🧺']];
+const _f=fix;fix=()=>{_f();if(!S)return;S.pen=S.pen||{};if(S.an.some(a=>a.k=='h'))S.pen.h=1;if(S.an.some(a=>a.k=='b'))S.pen.b=1;S.st=S.st||{earn:0,sales:0,hv:0};S.tr=S.tr||{}};
+function tiers(){let up=0;AC.forEach(a=>{const v=a[4](),l=a[5].filter(x=>v>=x).length;if(l>(S.tr[a[0]]||0)){S.tr[a[0]]=l;up=1;toast(['🥉','🥈','🥇'][l-1]+' إنجاز جديد: '+a[2]);if(l==3)conf()}});if(up)save()}
+const _c=chk;chk=()=>{_c();tiers()};
+const _t2=tap;tap=i=>{const p=S.plots[i];if(p&&stg(p)==4)S.st.hv++;_t2(i);tiers()};
+const sf=(c,ic)=>`<svg viewBox="0 0 120 84"><rect x=12 y=28 width=96 height=54 fill="#f3dfb0" stroke="#c9a35c" stroke-width=2 /><rect x=4 y=10 width=112 height=24 rx=5 fill="${c}"/>${[0,1,2,3,4,5,6].map(i=>`<rect x=${4+i*16} y=10 width=8 height=24 fill="#fff" opacity=.55 />`).join('')}<rect x=48 y=48 width=24 height=34 rx=3 fill="#8b5a2b"/><rect x=18 y=40 width=22 height=18 fill="#bfe6f7"/><rect x=80 y=40 width=22 height=18 fill="#bfe6f7"/><text x=60 y=44 text-anchor="middle" font-size="14">${ic}</text></svg>`;
+const ico=(e,c)=>`<svg viewBox="0 0 60 60"><circle cx=30 cy=30 r=28 fill="${c||'#e8f3d6'}"/><text x=30 y=40 text-anchor="middle" font-size="28">${e}</text></svg>`;
+const tree=(x,y)=>`<rect x=${x-3} y=${y} width=6 height=22 fill="#7a4a22"/><circle cx=${x} cy=${y-6} r=17 fill="#3f8f33"/><circle cx=${x-9} cy=${y+2} r=11 fill="#4ea53f"/><circle cx=${x+10} cy=${y+3} r=11 fill="#4ea53f"/>`;
+const SKY=`<svg class=bgs viewBox="0 0 400 130" preserveAspectRatio="xMidYMax slice"><circle cx=340 cy=34 r=20 fill="#ffd93b"/><ellipse cx=90 cy=30 rx=34 ry=11 fill="#fff" opacity=.9 /><ellipse cx=120 cy=24 rx=22 ry=9 fill="#fff" opacity=.9 /><path d="M0 118Q70 70 150 106T300 96T400 108V130H0Z" fill="#79c257"/><rect x=170 y=70 width=64 height=48 fill="#c0392b"/><path d="M162 72L202 44L242 72Z" fill="#7a2a1f"/><rect x=190 y=88 width=24 height=30 fill="#f5e6c8"/><path d="M190 88L214 118M214 88L190 118" stroke="#c0392b" stroke-width=3 />${tree(40,70)}${tree(300,68)}${tree(365,76)}<path d="M0 124H400" stroke="#d8b878" stroke-width=5 stroke-dasharray="3 9"/></svg>`;
+function farmV(){
+ const n=S.plots.length,rd=S.plots.some(p=>p&&stg(p)==4),msg=rd?'المحصول جاهز! اضغط عليه 🎉':(!Object.values(S.seeds).some(x=>x>0)&&!S.plots.some(Boolean))?'اذهب إلى السوق واشترِ بذورًا 🌰':'اضغط على أرض فارغة وازرع!';
+ let cells=S.plots.map(plotH).join('');
+ for(let j=n;j<12;j++)cells+=j==n?`<button class="pl lk" data-bp=1 ${S.coins>=40*(j-5)?'':'style="opacity:.8"'}>🔒<br>${40*(j-5)} 🪙<br>افتح</button>`:`<button class="pl lk" disabled>🔒</button>`;
+ const pen=(k,ti)=>S.pen[k]?`<div class=zone><h4>${ti}</h4><div class=pen>${S.an.map((a,i)=>a.k==k?`<button class="an${aRd(a)?' rd':''}" data-an=${i}>${anIn(a,aRd(a))}</button>`:'').join('')||'<span class=sp>اشترِ حيوانات من متجر الحيوانات</span>'}</div></div>`:`<div class=zone><h4>${ti}</h4><div class="pen lock">🔒 أرض مقفولة<button class=btn data-bpen=${k} ${S.coins>=PEN[k]?'':'disabled'}>افتحها بـ ${PEN[k]} 🪙</button></div></div>`;
+ return `<div class=world>${SKY}<div class=farmer><div class=fm>🧑‍🌾</div><span class=sp>${msg}</span></div><div class=zone><h4>🌱 الحقول (${n}/12)</h4><div class=field style="padding:0">${cells}</div></div>${pen('h','🐔 حظيرة الدجاج')}${pen('b','🐄 حظيرة الأبقار')}${S.own.some(x=>D[x])?`<div class=deco>${S.own.filter(x=>D[x]).map(x=>D[x].e).join(' ')}</div>`:''}</div><div class=card><h2>مخزنك</h2>${Object.keys(C).map(k=>`<span class=inv>${C[k].e} 🌰${S.seeds[k]} · 🧺${S.crops[k]}</span>`).join('')}</div>`}
+const lkh=s=>S.pass[s]>Date.now()?`<div class=muted>🔓 مفتوح حتى ${new Date(S.pass[s]).toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'})} — المتبقي اليوم ${left(s)} من ${lim()}</div>${left(s)>0?'':'<div class=muted>🚫 وصلت إلى حد الشراء اليوم. عد غدًا 🌙</div>'}<button class="btn alt" data-ex=${s} ${pleft()>0?'':'disabled'}>تدريب لزيادة النقاط (المتبقي ${pleft()} اليوم)</button>`:`<div class=lock><div>🧑‍🌾 أهلًا بك! أجب عن 5 أسئلة علوم لأفتح لك المحل أسبوعًا كاملًا 🔑</div><button class="btn alt" data-ex=${s}>ابدأ الامتحان (5 أسئلة)</button></div>`;
+const it=(sv,n,sub,b)=>`<div class=item>${sv}<div class=in>${n}<br><small class=muted>${sub}</small></div>${b}</div>`;
+function shopV(){
+ if(!shopIn)return `<div class=card><span class=tag>السوق</span><h2>🏘️ سوق المزرعة</h2><p class=muted>اضغط على أي محل لتدخل إليه.</p></div><div class=street>${SHP.map(s=>`<button class=bld data-shop=${s[0]}>${sf(s[2],s[3])}${s[1]}${s[0]=='seed'||s[0]=='tool'?`<div class=muted>${S.pass[s[0]]>Date.now()?'🔓 مفتوح':'🔒 مقفول'}</div>`:''}</button>`).join('')}</div>${chalCard()}`;
+ const s=shopIn,m=SHP.find(x=>x[0]==s);let h='';
+ if(s=='seed'){h=lkh('seed');if(S.pass.seed>Date.now())h+=Object.keys(C).map(k=>it(pSVG(k,4),C[k].n,`ينمو في ${Math.round(dur(k))} ث · يُباع بـ ${price(k)} 🪙 · عندك ${S.seeds[k]}`,`<button data-bs=${k} ${S.coins>=C[k].cost&&left('seed')>0?'':'disabled'}>${C[k].cost} 🪙</button>`)).join('')}
+ else if(s=='tool'){h=lkh('tool');if(S.pass.tool>Date.now())h+=Object.keys(tools).map(k=>{const l=S.tools[k],c=tools[k].c(l);return it(ico(k=='can'?'🚿':'🧺','#d6ecf7'),tools[k].n.slice(2),`${tools[k].d} · المستوى ${l}/3`,`<button data-bt=${k} ${l<3&&S.coins>=c&&left('tool')>0?'':'disabled'}>${l<3?c+' 🪙':'الأقصى'}</button>`)}).join('')}
+ else if(s=='an')h=Object.keys(A).map(k=>{const a=A[k],c=S.an.filter(x=>x.k==k).length;return it(ico(a.e,'#fde7c8'),a.n,`تنتج ${a.p} كل ${a.g} ث وتعطيك ${a.v} 🪙 · عندك ${c}`,S.pen[k]?`<button data-ba=${k} ${S.coins>=a.cost&&S.an.length<6?'':'disabled'}>${a.cost} 🪙</button>`:`<button data-bpen=${k} ${S.coins>=PEN[k]?'':'disabled'}>🔒 ${PEN_N[k]} ${PEN[k]} 🪙</button>`)}).join('')+'<p class=muted>الحد الأقصى 6 حيوانات. تحتاج حظيرة لكل نوع.</p>';
+ else if(s=='deco')h=Object.keys(D).map(k=>it(ico(D[k].e,'#f7e8b5'),D[k].n,'ضعها بنفسك في المزرعة',S.own.includes(k)?'<b>✔</b>':`<button data-bd=${k} ${S.coins>=D[k].c?'':'disabled'}>${D[k].c} 🪙</button>`)).join('')+Object.keys(T).map(k=>it(ico('🏅','#f7e8b5'),T[k].n,'لقب',S.title==k?'<b>✔ تلبسه</b>':S.own.includes(k)?`<button data-bd=${k}>البسه</button>`:`<button data-bd=${k} ${S.coins>=T[k].c?'':'disabled'}>${T[k].c} 🪙</button>`)).join('');
+ else h=Object.keys(C).map(k=>it(pSVG(k,4),`${C[k].n} (×${S.crops[k]})`,`سعر الواحد ${price(k)} 🪙`,`<button data-sell=${k} ${S.crops[k]?'':'disabled'}>بيع الكل</button>`)).join('');
+ return `<button class="btn alt" data-back=1 style="margin-top:12px">↩️ العودة إلى السوق</button><div class=shopin><h2>${m[3]} ${m[1]}</h2>${h}</div>`}
+function learnV(){const st=[['🌰','#5aa84a','١. اشترِ البذور','في السوق ادخل «متجر البذور». أجب عن ٥ أسئلة علوم، فإذا أصبت ٤ يفتح المحل أسبوعًا.'],['🌱','#7cc25a','٢. ازرع','في المزرعة اضغط على أرض فارغة واختر بذرة.'],['🌾','#e8a91c','٣. احصد','انتظر حتى تكبر النبتة ثم اضغط عليها لتحصدها.'],['🧺','#8b5a2b','٤. بِع المحصول','ادخل «سوق المحاصيل» واضغط «بيع الكل» لتأخذ العملات.'],['🏗️','#4a7fc0','٥. كبّر مزرعتك','افتح الأراضي المقفولة 🔒 بالعملات، وابنِ حظيرة للدجاج أو الأبقار ثم اشترِ حيواناتك. اجمع البيض واللبن ✨ وزيّن المزرعة: اضغط «رتّب الزينة» وحرّك كل زينة بإصبعك.'],['⭐','#d9534f','٦. النقاط والمستويات','كل إجابة صحيحة = ١٠ نقاط. كل ٥٠ نقطة تنقلك لمستوى جديد، ويزيد عدد مرات الشراء يوميًا: ٣ ثم ٥ ثم ٧.'],['📘','#8e5fc9','٧. الامتحان والتدريب','بعد الأسبوع يُقفل المحل، فأعد الامتحان لتفتحه. التدريب مرتان يوميًا ويعطيك نقاطًا. في مستوى الخبير يوجد امتحان التحدي (١٠ أسئلة).'],['🏆','#e8a91c','٨. الإنجازات','اجمع الميداليات 🥉🥈🥇 من البيع والحصاد والحيوانات والأراضي.']];
+ return `<div class=card><span class=tag>ابدأ هنا</span><h2>مزرعة العلوم تنتظرك! 🧑‍🌾</h2><p>ورثت مزرعة صغيرة، ومفتاح المحلات هو معلوماتك في العلوم!</p></div>`+st.map(x=>`<div class="card st" style="--c:${x[1]}"><span class=ic>${x[0]}</span><div><h3>${x[2]}</h3><p>${x[3]}</p></div></div>`).join('')+`<div class=card><span class=tag>نصيحة</span><p>الأسئلة عن النبات والتربة والطاقة والمادة. ذاكر جيدًا وستفتح كل المحلات 🌻</p></div>`}
+function badV(){return `<div class=card><h2>🎖️ الشارات</h2>${BG.map(b=>`<div class="badge ${S.badges.includes(b[0])?'':'off'}"><span>${b[1]}</span>${b[2]}</div>`).join('')}</div>`+AC.map(a=>{const v=a[4](),l=S.tr[a[0]]||0,nx=a[5][Math.min(l,2)];return `<div class=card><h2>${a[1]} ${a[2]}</h2><div>${['🥉','🥈','🥇'].map((x,i)=>`<span class="med${l>i?'':' off'}">${x}</span>`).join('')}</div><div class=bar><i style="width:${Math.min(100,v/nx*100)}%"></i></div><div class=muted>${Math.min(v,nx)}/${nx} ${a[3]}${l==3?' ✅ اكتمل':''}</div></div>`}).join('')}
+view=()=>tab=='learn'?learnV():tab=='farm'?farmV():tab=='shop'?shopV():tab=='badges'?badV():_v();
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!S)return;const d=b.dataset;
+ if(d.t)shopIn=null;
+ else if(d.shop){shopIn=d.shop;render();scrollTo(0,0)}
+ else if(d.back){shopIn=null;render()}
+ else if(d.bpen){const k=d.bpen;if(S.pen[k]||S.coins<PEN[k])return;S.coins-=PEN[k];S.pen[k]=1;save();toast('🏗️ فتحت '+PEN_N[k]);render()}
+ else if(d.sell){const k=d.sell,n=S.crops[k];S.st.earn+=n*price(k);S.st.sales+=n}
+ else if(d.ba&&!S.pen[d.ba]){e.stopImmediatePropagation();toast('افتح الحظيرة أولًا 🏗️')}
+},true);
+
+/* ===== decor placement ===== */
+let edit=false,drag=null;
+const dpos=i=>[12+(i%4)*24,16+Math.floor(i/4)*10];
+function dsync(){S.dp=S.dp||[];S.own.filter(x=>D[x]).forEach(k=>{if(!S.dp.some(d=>d.k==k)){const q=dpos(S.dp.length);S.dp.push({k,x:q[0],y:q[1]})}})}
+const _fv=farmV;farmV=()=>{dsync();let h=_fv();
+ const L=`<div class=dl>${S.dp.map((d,i)=>S.own.includes(d.k)?`<div class=dc data-di=${i} style="left:${d.x}%;top:${d.y}%">${D[d.k].e}</div>`:'').join('')}</div>`;
+ h=h.replace(/<div class=deco>.*?<\/div>/s,'');
+ return h.replace('<div class=world>',(S.own.some(x=>D[x])?`<button class="btn${edit?'':' alt'}" data-edit=1 style="margin-top:12px">${edit?'✔ تم الترتيب':'🎨 رتّب الزينة'}</button>${edit?'<p class=muted>اسحب أي زينة بإصبعك وضعها في المكان الذي تحبه.</p>':''}`:'')+`<div class="world${edit?' ed':''}">`+L)};
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!S)return;if(b.dataset.edit){edit=!edit;render()}else if(b.dataset.t)edit=false},true);
+document.addEventListener('pointerdown',e=>{const c=e.target.closest('.dc');if(!edit||!c)return;drag=c;try{c.setPointerCapture(e.pointerId)}catch(x){}e.preventDefault()});
+document.addEventListener('pointermove',e=>{if(!drag)return;const r=drag.closest('.world').getBoundingClientRect(),x=Math.max(4,Math.min(96,(e.clientX-r.left)/r.width*100)),y=Math.max(6,Math.min(96,(e.clientY-r.top)/r.height*100)),d=S.dp[+drag.dataset.di];drag.style.left=x+'%';drag.style.top=y+'%';d.x=+x.toFixed(1);d.y=+y.toFixed(1)});
+document.addEventListener('pointerup',()=>{if(drag){drag=null;save()}});
+fix();
+render();
+</script>
+</body>
+</html>
